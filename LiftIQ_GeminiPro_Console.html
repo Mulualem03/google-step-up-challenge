@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lift Console · Gemini Pro Student Launch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --blue:    #1A73E8;          /* Google blue, slightly tuned */
+    --blue-2:  #4285F4;
+    --blue-soft:#E8F0FE;
+    --red:     #EA4335;
+    --red-soft:#FCE8E6;
+    --yellow:  #FBBC04;
+    --yellow-soft:#FEF7E0;
+    --green:   #34A853;
+    --green-soft:#E6F4EA;
+    --ink:     #1F1F1F;
+    --ink-2:   #3C4043;
+    --slate:   #5F6368;
+    --slate-2: #80868B;
+    --line:    #E8EAED;
+    --line-2:  #DADCE0;
+    --paper:   #FFFFFF;
+    --bg:      #F8F9FA;
+    --bg-warm: #FAFAFA;
+    --shadow-1: 0 1px 2px rgba(60,64,67,.08), 0 1px 3px rgba(60,64,67,.04);
+    --shadow-2: 0 1px 2px rgba(60,64,67,.10), 0 4px 12px rgba(60,64,67,.06);
+    --shadow-3: 0 4px 8px rgba(60,64,67,.10), 0 12px 32px rgba(60,64,67,.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: "Inter Tight", system-ui, sans-serif; font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  h1,h2,h3,.display { font-family: "Fraunces", Georgia, serif; letter-spacing: -0.01em; }
+  .mono { font-family: "JetBrains Mono", monospace; }
+  button { font: inherit; cursor: pointer; border: 0; background: 0; color: inherit; }
+  a { color: var(--blue); text-decoration: none; }
+
+  /* ============ TOPBAR ============ */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.92); backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 36px; display: flex; align-items: center; gap: 28px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .dot {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: conic-gradient(from 220deg, var(--blue), var(--green), var(--yellow), var(--red), var(--blue));
+    box-shadow: var(--shadow-2);
+  }
+  .brand .name {
+    font-family: "Fraunces", serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em;
+  }
+  .brand .name span { color: var(--blue); }
+  .brand .sub { font-size: 11px; color: var(--slate); margin-top: 1px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar nav { display: flex; gap: 4px; margin-left: 24px; }
+  .topbar nav button {
+    padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+    color: var(--slate); transition: all .18s ease;
+  }
+  .topbar nav button:hover { background: var(--bg); color: var(--ink); }
+  .topbar nav button.active { background: var(--ink); color: white; }
+  .topbar .right { margin-left: auto; display: flex; align-items: center; gap: 18px; font-size: 12px; color: var(--slate); }
+  .topbar .right .pill {
+    padding: 5px 11px; border-radius: 999px; background: var(--blue-soft);
+    color: var(--blue); font-weight: 600; font-size: 11px; letter-spacing: 0.02em;
+  }
+
+  /* ============ MAIN GRID ============ */
+  main { max-width: 1340px; margin: 0 auto; padding: 32px 36px 80px; }
+  .view { display: none; animation: fadeIn .25s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
+
+  /* ============ HERO ============ */
+  .hero {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: end;
+    padding: 32px 0 40px; border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--blue); font-weight: 600; margin-bottom: 14px;
+  }
+  .eyebrow::before { content: "●"; color: var(--blue); margin-right: 8px; }
+  h1.title {
+    font-size: clamp(38px, 5vw, 64px); font-weight: 700; line-height: 0.98;
+    letter-spacing: -0.025em; max-width: 820px;
+  }
+  h1.title em { font-style: italic; color: var(--blue); font-weight: 500; }
+  .hero .lede {
+    font-size: 16px; color: var(--ink-2); max-width: 560px; margin-top: 22px; line-height: 1.55;
+  }
+  .hero-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .stat {
+    background: white; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px;
+  }
+  .stat .k { font-size: 11px; color: var(--slate); letter-spacing: 0.04em; text-transform: uppercase; }
+  .stat .v { font-family: "Fraunces", serif; font-size: 32px; font-weight: 600; margin-top: 4px; letter-spacing: -0.02em; }
+  .stat .vsub { font-size: 12px; color: var(--slate); margin-top: 2px; }
+
+  /* ============ SECTION ============ */
+  .section { padding: 44px 0; border-bottom: 1px solid var(--line); }
+  .section:last-of-type { border-bottom: 0; }
+  .section-head {
+    display: flex; align-items: end; justify-content: space-between; margin-bottom: 24px; gap: 24px;
+  }
+  .section-head .label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--slate); margin-bottom: 8px; }
+  .section-head h2 { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; max-width: 720px; }
+  .section-head p { color: var(--slate); font-size: 14px; max-width: 480px; line-height: 1.55; }
+
+  /* ============ MARKET CARDS ============ */
+  .market-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .mcard {
+    background: white; border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 20px;
+    transition: all .2s ease; position: relative; overflow: hidden;
+  }
+  .mcard:hover { border-color: var(--ink); box-shadow: var(--shadow-2); transform: translateY(-2px); }
+  .mcard .flag { font-size: 11px; letter-spacing: 0.16em; color: var(--slate); text-transform: uppercase; }
+  .mcard .country { font-family: "Fraunces", serif; font-size: 22px; font-weight: 600; margin-top: 6px; }
+  .mcard .verdict {
+    display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  }
+  .verdict.win  { background: var(--green-soft); color: var(--green); }
+  .verdict.warn { background: var(--yellow-soft); color: #B26200; }
+  .verdict.skip { background: var(--red-soft); color: #B0322B; }
+  .mcard .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px;
+    padding-top: 16px; border-top: 1px solid var(--line);
+  }
+  .mcard .grid .k { font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--slate); }
+  .mcard .grid .v { font-family: "Fraunces", serif; font-size: 20px; font-weight: 600; margin-top: 2px; }
+  .mcard.recommended {
+    background: linear-gradient(180deg, #fff 0%, #fff 70%, var(--blue-soft) 100%);
+    border-color: var(--blue);
+  }
+  .mcard .badge {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--blue); color: white; font-size: 10px; font-weight: 700;
+    padding: 4px 8px; border-radius: 6px; letter-spacing: 0.06em;
+  }
+
+  /* ============ CHANNEL TABLE ============ */
+  .channel-board {
+    background: white; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+  }
+  .ctable { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ctable th, .ctable td { padding: 14px 20px; text-align: left; border-bottom: 1px solid var(--line); }
+  .ctable th {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--slate); font-weight: 600; background: var(--bg-warm);
+  }
+  .ctable td { font-family: "JetBrains Mono", monospace; font-size: 13px; }
+  .ctable td.label { font-family: "Fraunces", serif; font-weight: 600; font-size: 16px; }
+  .ctable tr:last-child td { border-bottom: 0; }
+  .ctable tr.recommended td { background: var(--blue-soft); }
+  .bar-cell { display: flex; align-items: center; gap: 10px; }
+  .bar { height: 8px; background: var(--line); border-radius: 999px; flex: 1; overflow: hidden; max-width: 220px; }
+  .bar > span { display: block; height: 100%; background: var(--blue); border-radius: 999px; }
+  .bar.mute > span { background: var(--slate-2); }
+  .pill-tag {
+    display: inline-block; padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  }
+  .pill-tag.brand { background: var(--blue-soft); color: var(--blue); }
+  .pill-tag.perf  { background: var(--green-soft); color: var(--green); }
+  .pill-tag.skip  { background: var(--red-soft); color: #B0322B; }
+
+  /* ============ TWO COL ============ */
+  .two-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
+  .panel {
+    background: white; border: 1px solid var(--line); border-radius: 18px;
+    padding: 28px;
+  }
+  .panel h3 { font-size: 19px; font-weight: 600; margin-bottom: 4px; }
+  .panel .panel-sub { color: var(--slate); font-size: 13px; margin-bottom: 22px; }
+
+  /* ============ SIG CALCULATOR ============ */
+  .sig-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .sig-form > div {
+    background: var(--bg-warm); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  }
+  .sig-form label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate); display: block; }
+  .sig-form input {
+    width: 100%; border: 0; background: transparent; font-family: "JetBrains Mono", monospace;
+    font-size: 18px; font-weight: 600; padding: 4px 0 0; outline: none; color: var(--ink);
+  }
+  .sig-form .group-label {
+    grid-column: 1/-1; font-size: 12px; font-weight: 700; color: var(--ink-2);
+    letter-spacing: 0.04em; text-transform: uppercase; margin-top: 8px;
+  }
+  .sig-result {
+    border-radius: 14px; padding: 22px; border: 1px solid var(--line);
+  }
+  .sig-result.sig { background: var(--green-soft); border-color: var(--green); }
+  .sig-result.notsig { background: var(--red-soft); border-color: var(--red); }
+  .sig-result.neutral { background: var(--bg-warm); }
+  .sig-result .verdict-text {
+    font-family: "Fraunces", serif; font-size: 26px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .sig-result .verdict-text.sig { color: var(--green); }
+  .sig-result .verdict-text.notsig { color: var(--red); }
+  .sig-result .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px;
+    padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.08);
+  }
+  .sig-result .stats div .k { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate); }
+  .sig-result .stats div .v { font-family: "JetBrains Mono", monospace; font-size: 17px; font-weight: 600; margin-top: 2px; }
+
+  .preset-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .preset {
+    padding: 6px 12px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2); transition: all .15s;
+  }
+  .preset:hover { background: var(--ink); color: white; border-color: var(--ink); }
+
+  /* ============ CREATIVE PICKER ============ */
+  .creative-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .ccard {
+    background: white; border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px;
+    transition: all .2s ease; cursor: pointer; position: relative;
+  }
+  .ccard:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow-2); }
+  .ccard.winner {
+    background: linear-gradient(180deg, #fff 0%, #fff 60%, var(--blue-soft) 100%);
+    border-color: var(--blue);
+  }
+  .ccard .crown {
+    position: absolute; top: -10px; left: 14px;
+    background: var(--blue); color: white; font-size: 10px; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px; letter-spacing: 0.06em;
+  }
+  .ccard .name { font-family: "Fraunces", serif; font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+  .ccard .desc { color: var(--slate); font-size: 12px; line-height: 1.4; margin-bottom: 14px; min-height: 32px; }
+  .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .metric-row .k { font-size: 11px; color: var(--slate); }
+  .metric-row .v { font-family: "JetBrains Mono", monospace; font-size: 13px; font-weight: 600; }
+
+  /* ============ BUDGET ALLOCATOR ============ */
+  .alloc-wrap {
+    background: white; border: 1px solid var(--line); border-radius: 18px; padding: 28px 32px; margin-top: 24px;
+  }
+  .alloc-head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px;
+  }
+  .alloc-head .total {
+    font-family: "Fraunces", serif; font-size: 36px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .alloc-head .total span { color: var(--blue); }
+  .alloc-head .meta { color: var(--slate); font-size: 13px; text-align: right; }
+  .alloc-bar {
+    display: flex; height: 56px; border-radius: 12px; overflow: hidden; margin-bottom: 18px;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .alloc-bar > div {
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    color: white; font-weight: 600; font-size: 13px; transition: flex .3s ease;
+  }
+  .alloc-bar > div small { font-size: 10.5px; opacity: 0.85; font-weight: 500; }
+  .alloc-rows { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .alloc-row {
+    display: grid; grid-template-columns: 130px 1fr 110px 90px 80px;
+    gap: 16px; align-items: center; padding: 12px 16px;
+    background: var(--bg-warm); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .alloc-row .nm { font-family: "Fraunces", serif; font-weight: 600; font-size: 15px; }
+  .alloc-row input[type=range] {
+    -webkit-appearance: none; appearance: none; height: 4px; background: var(--line); border-radius: 999px; outline: none;
+    width: 100%;
+  }
+  .alloc-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--blue);
+    cursor: pointer; border: 3px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .alloc-row .pct { font-family: "JetBrains Mono", monospace; font-weight: 600; }
+  .alloc-row .usd { font-family: "JetBrains Mono", monospace; color: var(--slate); }
+  .alloc-row .lifted { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--green); font-weight: 600; }
+  .alloc-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .btn {
+    padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 500;
+    background: var(--ink); color: white; transition: all .15s;
+  }
+  .btn:hover { background: black; }
+  .btn.outline { background: transparent; color: var(--ink); border: 1px solid var(--line-2); }
+  .btn.outline:hover { background: var(--bg); }
+
+  /* ============ CALLOUT ============ */
+  .callout {
+    background: var(--ink); color: white; border-radius: 18px; padding: 36px 40px;
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 36px; align-items: center;
+  }
+  .callout h3 { font-size: 28px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; max-width: 380px; }
+  .callout h3 em { color: var(--yellow); font-style: italic; font-weight: 500; }
+  .callout .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  .callout .grid div .k { font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: 0.06em; text-transform: uppercase; }
+  .callout .grid div .v { font-family: "Fraunces", serif; font-size: 30px; font-weight: 600; margin-top: 4px; letter-spacing: -0.02em; color: white; }
+  .callout .grid div .v small { font-size: 13px; color: rgba(255,255,255,0.6); margin-left: 2px; }
+
+  /* ============ INSIGHTS ============ */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  .insight-card {
+    background: white; border: 1px solid var(--line); border-radius: 16px; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  .insight-card .num {
+    font-family: "Fraunces", serif; font-size: 76px; font-weight: 900; line-height: 1;
+    color: var(--blue); letter-spacing: -0.04em; margin-bottom: 4px;
+  }
+  .insight-card .num small { font-size: 28px; vertical-align: top; margin-left: 2px; font-weight: 600; color: var(--slate); }
+  .insight-card .num .red { color: var(--red); }
+  .insight-card h4 {
+    font-family: "Fraunces", serif; font-size: 19px; font-weight: 600; margin: 12px 0 8px; line-height: 1.25;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .insight-card p { color: var(--ink-2); font-size: 13.5px; line-height: 1.55; }
+  .insight-card .so-what {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--slate);
+  }
+  .insight-card .so-what b { color: var(--ink); font-weight: 600; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px; padding: 32px 36px; background: var(--ink); color: rgba(255,255,255,0.65);
+    font-size: 12px; display: flex; justify-content: space-between;
+  }
+  footer span { color: white; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .market-grid { grid-template-columns: repeat(2, 1fr); }
+    .creative-grid { grid-template-columns: repeat(2, 1fr); }
+    .insight-grid { grid-template-columns: 1fr; }
+    .hero { grid-template-columns: 1fr; gap: 24px; }
+    .two-col { grid-template-columns: 1fr; }
+    .callout { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .market-grid { grid-template-columns: 1fr; }
+    .creative-grid { grid-template-columns: 1fr; }
+    .alloc-row { grid-template-columns: 1fr; gap: 6px; }
+    main { padding: 20px; }
+    h1.title { font-size: 36px; }
+    .topbar { padding: 12px 16px; gap: 12px; }
+    .topbar nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOPBAR ============ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="dot"></div>
+    <div>
+      <div class="name">Lift<span>IQ</span></div>
+      <div class="sub">Gemini Pro Student Launch · Console</div>
+    </div>
+  </div>
+  <nav id="nav">
+    <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="markets">Markets</button>
+    <button data-tab="channels">Channels</button>
+    <button data-tab="lift">Brand Lift</button>
+    <button data-tab="creative">Creative</button>
+    <button data-tab="plan">Plan $10M</button>
+  </nav>
+  <div class="right">
+    <span class="pill">Brief · 8 weeks · 3 markets</span>
+    <span>v1.0 · May 2026</span>
+  </div>
+</header>
+
+<main>
+
+<!-- =====================================================
+     VIEW: OVERVIEW
+====================================================== -->
+<section class="view active" id="view-overview">
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Campaign brief · multi-market launch</div>
+      <h1 class="title">Make <em>Gemini Pro</em> the AI students reach for first.</h1>
+      <p class="lede">
+        ChatGPT owns 80% of student AI conversation in the UK. Gemini lags despite a free Pro upgrade
+        through to finals 2026. This console converts two years of historic spend, 48 brand-lift studies,
+        and fresh creative tests into one decisive 8-week, $10M plan.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="k">Historic spend analysed</div><div class="v">$10.6M</div><div class="vsub">across 4 markets · 4 channels · 2 years</div></div>
+      <div class="stat"><div class="k">Brand-lift studies</div><div class="v">48 <span style="font-size:18px;color:var(--green)">→ 32</span></div><div class="vsub">significant at p&lt;0.05</div></div>
+      <div class="stat"><div class="k">Cheapest CPLU</div><div class="v">$0.26</div><div class="vsub">SA · YouTube · NewYear_24</div></div>
+      <div class="stat"><div class="k">Top creative</div><div class="v">Life Hack</div><div class="vsub">+10.1pp avg consideration · 18-24</div></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">The five things that matter</div>
+        <h2>What two years of data really say.</h2>
+      </div>
+      <p>Each insight came out of the analysis on Markets, Channels, Brand Lift, and Creative testing. They directly drive the plan on the right.</p>
+    </div>
+
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="num">3.8<small>×</small></div>
+        <h4>SA &amp; EG convert 3.8× more efficiently than UK / DE.</h4>
+        <p>CPA is $6.15 in SA and $6.33 in EG, versus $23.25 in DE and $23.70 in UK. Performance budget belongs in MENA.</p>
+        <div class="so-what"><b>So what:</b> Reserve UK / DE for awareness, MENA for conversion.</div>
+      </div>
+      <div class="insight-card">
+        <div class="num red">0<small>%</small></div>
+        <h4>Display drove zero significant brand lift.</h4>
+        <p>16 Display studies, none statistically significant. CPA is $57 (10× Search). Massive reach but no measurable consideration shift.</p>
+        <div class="so-what"><b>So what:</b> Drop Display from the launch entirely.</div>
+      </div>
+      <div class="insight-card">
+        <div class="num">10.1<small>pp</small></div>
+        <h4>"Life Hack" is the universal creative winner.</h4>
+        <p>Tops every market and every channel for 18-24-year-olds. 3.3× the consideration lift of #2 ("Coding Help").</p>
+        <div class="so-what"><b>So what:</b> Lead all paid media with Life Hack; rotate Coding Help &amp; Study With Me as variants.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="callout">
+      <h3>The recommendation in one line: launch in <em>UK · EG · SA</em>, on YouTube + Social + Search, lead with <em>Life Hack</em>, drop Display.</h3>
+      <div class="grid">
+        <div><div class="k">Markets</div><div class="v">3 <small>of 4</small></div></div>
+        <div><div class="k">Channels</div><div class="v">3 <small>of 4</small></div></div>
+        <div><div class="k">Forecast lift</div><div class="v">~30M <small>students reached</small></div></div>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- =====================================================
+     VIEW: MARKETS
+====================================================== -->
+<section class="view" id="view-markets">
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">Market efficiency</div>
+        <h2>Where each dollar goes furthest.</h2>
+      </div>
+      <p>CPA based on every dollar of historic spend. CPLU averaged across statistically significant brand-lift studies only.</p>
+    </div>
+    <div class="market-grid" id="market-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">The trade-off</div>
+        <h2>MENA converts. UK builds the brand.</h2>
+      </div>
+      <p>SA &amp; EG win on every efficiency metric, but Gemini's reputational battle is in English-speaking student populations. The plan keeps a UK presence and pushes performance into MENA.</p>
+    </div>
+    <div class="panel">
+      <h3>Recommended market split</h3>
+      <p class="panel-sub">Three markets, blended: 1 brand-priority (UK), 2 efficiency-priority (EG, SA). Rationale below.</p>
+      <table class="ctable" style="border:1px solid var(--line); border-radius: 12px; overflow:hidden;">
+        <thead><tr><th>Market</th><th>Role</th><th>Why</th><th>Watch-outs</th></tr></thead>
+        <tbody>
+          <tr class="recommended">
+            <td class="label">UK</td>
+            <td><span class="pill-tag brand">Brand priority</span></td>
+            <td>Sign-up window closes 15 Sep 26. ChatGPT SOV = 80%. UK universities are the volume target for Pro upgrade.</td>
+            <td>CPA is the highest. Cap performance spend; lean into reach.</td>
+          </tr>
+          <tr class="recommended">
+            <td class="label">EG</td>
+            <td><span class="pill-tag perf">Performance priority</span></td>
+            <td>Lowest blended CPA &amp; second-lowest CPLU. Strong YouTube + Social lift across every campaign tested.</td>
+            <td>Smaller English-speaking student base, keep YouTube weight high.</td>
+          </tr>
+          <tr class="recommended">
+            <td class="label">SA</td>
+            <td><span class="pill-tag perf">Performance priority</span></td>
+            <td>Lowest CPLU overall ($0.30 avg). Highest CVR (0.20%). Students respond strongly to Social.</td>
+            <td>Mid-sized population, balance with EG.</td>
+          </tr>
+          <tr>
+            <td class="label">DE</td>
+            <td><span class="pill-tag skip">Park</span></td>
+            <td>-</td>
+            <td>CPA &amp; CPLU both worst-of-four. No clear creative or channel advantage. De-prioritise this campaign.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     VIEW: CHANNELS
+====================================================== -->
+<section class="view" id="view-channels">
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">Channel efficiency</div>
+        <h2>Each channel does one job, only one.</h2>
+      </div>
+      <p>Search converts. YouTube and Social shift consideration. Display does neither at meaningful efficiency.</p>
+    </div>
+    <div class="channel-board">
+      <table class="ctable">
+        <thead><tr><th>Channel</th><th>Role</th><th>CPA</th><th>CPM</th><th>CVR</th><th>Avg CPLU</th><th>Sig studies</th><th>Verdict</th></tr></thead>
+        <tbody id="channel-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section two-col">
+    <div class="panel">
+      <h3>Why Display is out</h3>
+      <p class="panel-sub">It looks cheap on impressions but fails everywhere it counts.</p>
+      <ul style="list-style:none; padding:0; display:grid; gap:14px;">
+        <li style="display:flex;gap:14px;align-items:start;">
+          <div style="font-family:Fraunces,serif;font-size:36px;font-weight:700;color:var(--red);line-height:1;">1</div>
+          <div><b>Cheapest CPM, worst CPA.</b><br><span style="font-size:13px;color:var(--slate)">$4 CPM but $57 CPA, 10× more expensive per sign-up than Search.</span></div>
+        </li>
+        <li style="display:flex;gap:14px;align-items:start;">
+          <div style="font-family:Fraunces,serif;font-size:36px;font-weight:700;color:var(--red);line-height:1;">2</div>
+          <div><b>Zero significant brand lift.</b><br><span style="font-size:13px;color:var(--slate)">All 16 Display brand-lift studies were non-significant. Whatever lift exists is statistical noise.</span></div>
+        </li>
+        <li style="display:flex;gap:14px;align-items:start;">
+          <div style="font-family:Fraunces,serif;font-size:36px;font-weight:700;color:var(--red);line-height:1;">3</div>
+          <div><b>Brief is 8 weeks, not always-on.</b><br><span style="font-size:13px;color:var(--slate)">Awareness-only formats need long flighting to compound. We don't have that time.</span></div>
+        </li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Why YouTube + Social + Search wins</h3>
+      <p class="panel-sub">Three channels, three jobs, full funnel coverage.</p>
+      <div style="display:grid; gap:14px;">
+        <div style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;">
+          <span class="pill-tag brand">YouTube</span>
+          <div style="margin-top:8px;font-size:13.5px"><b>Job:</b> reach the student at home, demonstrate Gemini Pro in 30 seconds.</div>
+          <div style="font-size:12px;color:var(--slate);margin-top:4px">Avg CPLU $0.37 · drove 67% relative consideration lift in stat-sig studies.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;">
+          <span class="pill-tag brand">Social</span>
+          <div style="margin-top:8px;font-size:13.5px"><b>Job:</b> "Life Hack" creative + UGC formats. Where students discover.</div>
+          <div style="font-size:12px;color:var(--slate);margin-top:4px">Avg CPLU $0.35 · 70% relative consideration lift · best-in-class for Life Hack.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;">
+          <span class="pill-tag perf">Search</span>
+          <div style="margin-top:8px;font-size:13.5px"><b>Job:</b> capture demand. Sign up the students our ads have warmed up.</div>
+          <div style="font-size:12px;color:var(--slate);margin-top:4px">$5.76 CPA, 1.4% CVR, by far the best converter. No brand lift expected.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     VIEW: BRAND LIFT
+====================================================== -->
+<section class="view" id="view-lift">
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">Brand-lift significance · live calculator</div>
+        <h2>Know which lift is real before you spend on it.</h2>
+      </div>
+      <p>Two-proportion z-test. Pick a study from history, or type your own counts. P&lt;0.05 means the consideration shift wasn't random chance.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h3>Significance Calculator</h3>
+        <p class="panel-sub">Pick a historic study or override the numbers.</p>
+
+        <div class="preset-row" id="preset-row"></div>
+
+        <div class="sig-form">
+          <div class="group-label">Control group (didn't see the ad)</div>
+          <div>
+            <label>Total surveyed</label>
+            <input type="number" id="cn" value="2500" />
+          </div>
+          <div>
+            <label>Considered Gemini Pro</label>
+            <input type="number" id="cs" value="375" />
+          </div>
+          <div class="group-label">Exposed group (saw the ad)</div>
+          <div>
+            <label>Total surveyed</label>
+            <input type="number" id="en" value="2500" />
+          </div>
+          <div>
+            <label>Considered Gemini Pro</label>
+            <input type="number" id="es" value="600" />
+          </div>
+        </div>
+
+        <div class="sig-result neutral" id="sig-result">
+          <div class="verdict-text" id="sig-verdict">-</div>
+          <div style="font-size:13px;color:var(--ink-2);margin-top:4px;" id="sig-explain">Awaiting input.</div>
+          <div class="stats">
+            <div><div class="k">Control rate</div><div class="v" id="cr">-</div></div>
+            <div><div class="k">Exposed rate</div><div class="v" id="er">-</div></div>
+            <div><div class="k">Absolute lift</div><div class="v" id="al">-</div></div>
+            <div><div class="k">Relative lift</div><div class="v" id="rl">-</div></div>
+            <div><div class="k">Z-score</div><div class="v" id="zs">-</div></div>
+            <div><div class="k">P-value</div><div class="v" id="pv">-</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Top 8 most efficient stat-sig campaigns</h3>
+        <p class="panel-sub">Lowest cost per lifted user across the 32 significant studies.</p>
+        <table class="ctable" style="margin-top:6px;">
+          <thead><tr><th>Campaign · M · Ch</th><th>Lift</th><th>CPLU</th></tr></thead>
+          <tbody id="cplu-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     VIEW: CREATIVE
+====================================================== -->
+<section class="view" id="view-creative">
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">Creative testing · 18-24 only</div>
+        <h2>One ad to rule them all.</h2>
+      </div>
+      <p>Brand-lift testing on five creative concepts across UK / DE / EG / SA and four channels. Sorted by consideration lift.</p>
+    </div>
+
+    <div class="creative-grid" id="creative-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">Pick by market</div>
+        <h2>Same winner, every market.</h2>
+      </div>
+      <p>"Life Hack" tops the consideration board in <b>all four</b> markets, a rare unanimous result. Use it as the lead asset, with one localised variant per market.</p>
+    </div>
+
+    <div class="channel-board">
+      <table class="ctable">
+        <thead><tr><th>Market</th><th>1st (lead)</th><th>2nd (rotate)</th><th>3rd (test)</th><th>Notes</th></tr></thead>
+        <tbody id="creative-by-market-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     VIEW: PLAN
+====================================================== -->
+<section class="view" id="view-plan">
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="label">Budget allocator · $10M / 8 weeks / 3 markets</div>
+        <h2>Drag the sliders. Watch the forecast move.</h2>
+      </div>
+      <p>The default split below is the recommendation. CPLU forecast uses each market×channel's historic significant-study average. Display is excluded.</p>
+    </div>
+
+    <div class="alloc-wrap">
+      <div class="alloc-head">
+        <div>
+          <div style="font-size:11px;color:var(--slate);letter-spacing:0.04em;text-transform:uppercase;">Working budget</div>
+          <div class="total">$<span id="alloc-total">10,000,000</span></div>
+        </div>
+        <div class="meta">
+          <div><b id="alloc-lifted">-</b> students moved into consideration</div>
+          <div>Avg CPLU <b id="alloc-avgcplu">-</b></div>
+        </div>
+      </div>
+
+      <div class="alloc-bar" id="alloc-bar"></div>
+
+      <div class="alloc-rows" id="alloc-rows"></div>
+
+      <div class="alloc-actions">
+        <button class="btn" id="reset-alloc">Reset to recommendation</button>
+        <button class="btn outline" id="search-only">Search-only mode</button>
+        <button class="btn outline" id="brand-heavy">Brand-heavy (70% YouTube/Social)</button>
+      </div>
+    </div>
+
+    <div class="section" style="border:0;">
+      <div class="callout" style="margin-top:18px;">
+        <h3>The 8-week plan in one paragraph.</h3>
+        <p style="font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.85);max-width:560px;">
+          Run in <b>UK, EG, SA</b>. Allocate <b>40% YouTube</b>, <b>30% Social</b>, <b>30% Search</b>.
+          Lead with <b>"Life Hack"</b> on YouTube &amp; Social; localise per market. Pulse Search across all 8 weeks
+          to capture warmed-up demand. <b>No Display</b>. Reach forecast <b>~30M unique students</b>,
+          <b>~3M moved into Gemini Pro consideration</b>, at an average CPLU of <b>~$0.34</b>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>Built for the Digdata × Google Step Up Career Challenge, May 2026.</div>
+  <div>Analysis · 1,664 weekly rows · 48 brand-lift studies · 240 creative tests. <span>Lift IQ</span></div>
+</footer>
+
+<script>
+/* ============================================================
+   1.  EMBEDDED DATA  (computed by analyse.py)
+============================================================ */
+const DATA = {"totals":{"spend":10617345.0,"impressions":898192112,"reach":289215524,"conversions":950431,"studies":48,"sig_studies":32},"market":[{"Market":"DE","Spend_USD":3187902,"Impressions":265750160,"Reach":86429705,"Conversions":137131,"CPM":11.996,"CPA":23.247,"CPR":36.884,"CVR":0.052},{"Market":"EG","Spend_USD":2151203,"Impressions":188418029,"Reach":59479404,"Conversions":340022,"CPM":11.417,"CPA":6.327,"CPR":36.167,"CVR":0.18},{"Market":"SA","Spend_USD":2083640,"Impressions":172652001,"Reach":55848091,"Conversions":338507,"CPM":12.068,"CPA":6.155,"CPR":37.309,"CVR":0.196},{"Market":"UK","Spend_USD":3194600,"Impressions":271371922,"Reach":87458324,"Conversions":134771,"CPM":11.772,"CPA":23.704,"CPR":36.527,"CVR":0.05}],"channel":[{"Channel":"Display","Spend_USD":1820884,"Impressions":455287308,"Reach":92434131,"Conversions":31783,"CPM":3.999,"CPA":57.291,"CPR":19.699,"CVR":0.007},{"Channel":"Search","Spend_USD":2910428,"Impressions":35985535,"Reach":31395714,"Conversions":505336,"CPM":80.878,"CPA":5.759,"CPR":92.701,"CVR":1.404},{"Channel":"Social","Spend_USD":2923541,"Impressions":201997758,"Reach":81707177,"Conversions":205578,"CPM":14.473,"CPA":14.221,"CPR":35.781,"CVR":0.102},{"Channel":"YouTube","Spend_USD":2962492,"Impressions":204921511,"Reach":83678502,"Conversions":207734,"CPM":14.457,"CPA":14.261,"CPR":35.403,"CVR":0.101}],"market_channel":[{"Market":"DE","Channel":"Display","Spend_USD":546337,"Impressions":134669970,"Reach":27688783,"Conversions":4490,"CPM":4.057,"CPA":121.679,"CPR":19.731,"CVR":0.003},{"Market":"DE","Channel":"Search","Spend_USD":903083,"Impressions":11190771,"Reach":9779265,"Conversions":74667,"CPM":80.699,"CPA":12.095,"CPR":92.347,"CVR":0.667},{"Market":"DE","Channel":"Social","Spend_USD":853339,"Impressions":58142390,"Reach":23613823,"Conversions":28355,"CPM":14.677,"CPA":30.095,"CPR":36.137,"CVR":0.049},{"Market":"DE","Channel":"YouTube","Spend_USD":885143,"Impressions":61747029,"Reach":25347834,"Conversions":29619,"CPM":14.335,"CPA":29.884,"CPR":34.92,"CVR":0.048},{"Market":"EG","Channel":"Display","Spend_USD":390429,"Impressions":98734297,"Reach":19749835,"Conversions":12204,"CPM":3.954,"CPA":31.992,"CPR":19.769,"CVR":0.012},{"Market":"EG","Channel":"Search","Spend_USD":581230,"Impressions":7232797,"Reach":6288476,"Conversions":180205,"CPM":80.36,"CPA":3.225,"CPR":92.428,"CVR":2.491},{"Market":"EG","Channel":"Social","Spend_USD":599752,"Impressions":41771532,"Reach":16740556,"Conversions":74516,"CPM":14.358,"CPA":8.049,"CPR":35.826,"CVR":0.178},{"Market":"EG","Channel":"YouTube","Spend_USD":579792,"Impressions":40679403,"Reach":16700537,"Conversions":73097,"CPM":14.253,"CPA":7.932,"CPR":34.717,"CVR":0.18},{"Market":"SA","Channel":"Display","Spend_USD":335932,"Impressions":85166542,"Reach":17197782,"Conversions":10521,"CPM":3.944,"CPA":31.93,"CPR":19.533,"CVR":0.012},{"Market":"SA","Channel":"Search","Spend_USD":583448,"Impressions":7173126,"Reach":6294576,"Conversions":180827,"CPM":81.338,"CPA":3.227,"CPR":92.691,"CVR":2.521},{"Market":"SA","Channel":"Social","Spend_USD":577913,"Impressions":39687879,"Reach":16033091,"Conversions":72955,"CPM":14.561,"CPA":7.921,"CPR":36.045,"CVR":0.184},{"Market":"SA","Channel":"YouTube","Spend_USD":586347,"Impressions":40624454,"Reach":16322642,"Conversions":74204,"CPM":14.433,"CPA":7.902,"CPR":35.922,"CVR":0.183},{"Market":"UK","Channel":"Display","Spend_USD":548186,"Impressions":136716499,"Reach":27797731,"Conversions":4568,"CPM":4.01,"CPA":120.006,"CPR":19.721,"CVR":0.003},{"Market":"UK","Channel":"Search","Spend_USD":842667,"Impressions":10388841,"Reach":9033397,"Conversions":69637,"CPM":81.113,"CPA":12.101,"CPR":93.284,"CVR":0.67},{"Market":"UK","Channel":"Social","Spend_USD":892537,"Impressions":62395957,"Reach":25319707,"Conversions":29752,"CPM":14.304,"CPA":29.999,"CPR":35.251,"CVR":0.048},{"Market":"UK","Channel":"YouTube","Spend_USD":911210,"Impressions":61870625,"Reach":25307489,"Conversions":30814,"CPM":14.728,"CPA":29.571,"CPR":36.006,"CVR":0.05}],"brand_lift":[{"Campaign_Name":"BackToSchool_23","Market":"UK","Channel":"YouTube","Control_Responses":1474,"Control_Consideration":221,"Exposed_Responses":2615,"Exposed_Consideration":633,"Control_Rate":0.1499,"Exposed_Rate":0.2421,"Relative_Lift":61.4497,"Z_Score":-6.9589,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0921},{"Campaign_Name":"BackToSchool_23","Market":"UK","Channel":"Social","Control_Responses":1122,"Control_Consideration":168,"Exposed_Responses":1549,"Exposed_Consideration":398,"Control_Rate":0.1497,"Exposed_Rate":0.2569,"Relative_Lift":71.5992,"Z_Score":-6.6919,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1072},{"Campaign_Name":"BackToSchool_23","Market":"UK","Channel":"Display","Control_Responses":1633,"Control_Consideration":244,"Exposed_Responses":2257,"Exposed_Consideration":356,"Control_Rate":0.1494,"Exposed_Rate":0.1577,"Relative_Lift":5.5637,"Z_Score":-0.7085,"P_Value":0.4786,"Stat_Sig":"No","Absolute_Lift":0.0083},{"Campaign_Name":"BackToSchool_23","Market":"DE","Channel":"YouTube","Control_Responses":1600,"Control_Consideration":240,"Exposed_Responses":2941,"Exposed_Consideration":677,"Control_Rate":0.15,"Exposed_Rate":0.2302,"Relative_Lift":53.4625,"Z_Score":-6.4305,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0802},{"Campaign_Name":"BackToSchool_23","Market":"DE","Channel":"Social","Control_Responses":1768,"Control_Consideration":265,"Exposed_Responses":2621,"Exposed_Consideration":674,"Control_Rate":0.1499,"Exposed_Rate":0.2572,"Relative_Lift":71.5652,"Z_Score":-8.4993,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1073},{"Campaign_Name":"BackToSchool_23","Market":"DE","Channel":"Display","Control_Responses":2493,"Control_Consideration":373,"Exposed_Responses":2476,"Exposed_Consideration":397,"Control_Rate":0.1496,"Exposed_Rate":0.1603,"Relative_Lift":7.1651,"Z_Score":-1.0441,"P_Value":0.2964,"Stat_Sig":"No","Absolute_Lift":0.0107},{"Campaign_Name":"BackToSchool_23","Market":"SA","Channel":"YouTube","Control_Responses":1911,"Control_Consideration":286,"Exposed_Responses":2855,"Exposed_Consideration":730,"Control_Rate":0.1497,"Exposed_Rate":0.2557,"Relative_Lift":70.8486,"Z_Score":-8.7596,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.106},{"Campaign_Name":"BackToSchool_23","Market":"SA","Channel":"Social","Control_Responses":1700,"Control_Consideration":255,"Exposed_Responses":2371,"Exposed_Consideration":625,"Control_Rate":0.15,"Exposed_Rate":0.2636,"Relative_Lift":75.7346,"Z_Score":-8.684,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1136},{"Campaign_Name":"BackToSchool_23","Market":"SA","Channel":"Display","Control_Responses":1898,"Control_Consideration":284,"Exposed_Responses":2275,"Exposed_Consideration":367,"Control_Rate":0.1496,"Exposed_Rate":0.1613,"Relative_Lift":7.8109,"Z_Score":-1.0361,"P_Value":0.3002,"Stat_Sig":"No","Absolute_Lift":0.0117},{"Campaign_Name":"BackToSchool_23","Market":"EG","Channel":"YouTube","Control_Responses":1669,"Control_Consideration":250,"Exposed_Responses":2230,"Exposed_Consideration":569,"Control_Rate":0.1498,"Exposed_Rate":0.2552,"Relative_Lift":70.3428,"Z_Score":-7.9918,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1054},{"Campaign_Name":"BackToSchool_23","Market":"EG","Channel":"Social","Control_Responses":2915,"Control_Consideration":437,"Exposed_Responses":1974,"Exposed_Consideration":493,"Control_Rate":0.1499,"Exposed_Rate":0.2497,"Relative_Lift":66.5931,"Z_Score":-8.7265,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0998},{"Campaign_Name":"BackToSchool_23","Market":"EG","Channel":"Display","Control_Responses":2105,"Control_Consideration":315,"Exposed_Responses":1260,"Exposed_Consideration":204,"Control_Rate":0.1496,"Exposed_Rate":0.1619,"Relative_Lift":8.1935,"Z_Score":-0.9531,"P_Value":0.3405,"Stat_Sig":"No","Absolute_Lift":0.0123},{"Campaign_Name":"ExamPrep_23","Market":"UK","Channel":"YouTube","Control_Responses":2909,"Control_Consideration":436,"Exposed_Responses":1306,"Exposed_Consideration":336,"Control_Rate":0.1499,"Exposed_Rate":0.2573,"Relative_Lift":71.6538,"Z_Score":-8.3358,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1074},{"Campaign_Name":"ExamPrep_23","Market":"UK","Channel":"Social","Control_Responses":2713,"Control_Consideration":406,"Exposed_Responses":1571,"Exposed_Consideration":377,"Control_Rate":0.1496,"Exposed_Rate":0.24,"Relative_Lift":60.3574,"Z_Score":-7.3717,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0903},{"Campaign_Name":"ExamPrep_23","Market":"UK","Channel":"Display","Control_Responses":1705,"Control_Consideration":255,"Exposed_Responses":1164,"Exposed_Consideration":185,"Control_Rate":0.1496,"Exposed_Rate":0.1589,"Relative_Lift":6.2681,"Z_Score":-0.6843,"P_Value":0.4938,"Stat_Sig":"No","Absolute_Lift":0.0094},{"Campaign_Name":"ExamPrep_23","Market":"DE","Channel":"YouTube","Control_Responses":2774,"Control_Consideration":416,"Exposed_Responses":1817,"Exposed_Consideration":410,"Control_Rate":0.15,"Exposed_Rate":0.2256,"Relative_Lift":50.4673,"Z_Score":-6.5284,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0757},{"Campaign_Name":"ExamPrep_23","Market":"DE","Channel":"Social","Control_Responses":1140,"Control_Consideration":171,"Exposed_Responses":1333,"Exposed_Consideration":303,"Control_Rate":0.15,"Exposed_Rate":0.2273,"Relative_Lift":51.5379,"Z_Score":-4.8686,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0773},{"Campaign_Name":"ExamPrep_23","Market":"DE","Channel":"Display","Control_Responses":2305,"Control_Consideration":345,"Exposed_Responses":1949,"Exposed_Consideration":313,"Control_Rate":0.1497,"Exposed_Rate":0.1606,"Relative_Lift":7.2962,"Z_Score":-0.9814,"P_Value":0.3264,"Stat_Sig":"No","Absolute_Lift":0.0109},{"Campaign_Name":"ExamPrep_23","Market":"SA","Channel":"YouTube","Control_Responses":1905,"Control_Consideration":285,"Exposed_Responses":2356,"Exposed_Consideration":615,"Control_Rate":0.1496,"Exposed_Rate":0.261,"Relative_Lift":74.4817,"Z_Score":-8.86,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1114},{"Campaign_Name":"ExamPrep_23","Market":"SA","Channel":"Social","Control_Responses":1006,"Control_Consideration":150,"Exposed_Responses":1752,"Exposed_Consideration":463,"Control_Rate":0.1491,"Exposed_Rate":0.2643,"Relative_Lift":77.2367,"Z_Score":-7.0022,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1152},{"Campaign_Name":"ExamPrep_23","Market":"SA","Channel":"Display","Control_Responses":1432,"Control_Consideration":214,"Exposed_Responses":1895,"Exposed_Consideration":299,"Control_Rate":0.1494,"Exposed_Rate":0.1578,"Relative_Lift":5.5823,"Z_Score":-0.6597,"P_Value":0.5094,"Stat_Sig":"No","Absolute_Lift":0.0083},{"Campaign_Name":"ExamPrep_23","Market":"EG","Channel":"YouTube","Control_Responses":1724,"Control_Consideration":258,"Exposed_Responses":2330,"Exposed_Consideration":635,"Control_Rate":0.1497,"Exposed_Rate":0.2725,"Relative_Lift":82.1107,"Z_Score":-9.3332,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1229},{"Campaign_Name":"ExamPrep_23","Market":"EG","Channel":"Social","Control_Responses":1750,"Control_Consideration":262,"Exposed_Responses":1151,"Exposed_Consideration":297,"Control_Rate":0.1497,"Exposed_Rate":0.258,"Relative_Lift":72.3526,"Z_Score":-7.2368,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1083},{"Campaign_Name":"ExamPrep_23","Market":"EG","Channel":"Display","Control_Responses":1640,"Control_Consideration":246,"Exposed_Responses":2915,"Exposed_Consideration":467,"Control_Rate":0.15,"Exposed_Rate":0.1602,"Relative_Lift":6.8039,"Z_Score":-0.9099,"P_Value":0.3629,"Stat_Sig":"No","Absolute_Lift":0.0102},{"Campaign_Name":"NewYear_24","Market":"UK","Channel":"YouTube","Control_Responses":1156,"Control_Consideration":173,"Exposed_Responses":2411,"Exposed_Consideration":574,"Control_Rate":0.1497,"Exposed_Rate":0.2381,"Relative_Lift":59.084,"Z_Score":-6.0744,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0884},{"Campaign_Name":"NewYear_24","Market":"UK","Channel":"Social","Control_Responses":1081,"Control_Consideration":162,"Exposed_Responses":2038,"Exposed_Consideration":474,"Control_Rate":0.1499,"Exposed_Rate":0.2326,"Relative_Lift":55.1975,"Z_Score":-5.4565,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0827},{"Campaign_Name":"NewYear_24","Market":"UK","Channel":"Display","Control_Responses":1561,"Control_Consideration":234,"Exposed_Responses":1486,"Exposed_Consideration":239,"Control_Rate":0.1499,"Exposed_Rate":0.1608,"Relative_Lift":7.2917,"Z_Score":-0.8328,"P_Value":0.4049,"Stat_Sig":"No","Absolute_Lift":0.0109},{"Campaign_Name":"NewYear_24","Market":"DE","Channel":"YouTube","Control_Responses":2977,"Control_Consideration":446,"Exposed_Responses":2492,"Exposed_Consideration":606,"Control_Rate":0.1498,"Exposed_Rate":0.2432,"Relative_Lift":62.3187,"Z_Score":-8.7241,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0934},{"Campaign_Name":"NewYear_24","Market":"DE","Channel":"Social","Control_Responses":2873,"Control_Consideration":430,"Exposed_Responses":2202,"Exposed_Consideration":562,"Control_Rate":0.1497,"Exposed_Rate":0.2552,"Relative_Lift":70.5243,"Z_Score":-9.3977,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1056},{"Campaign_Name":"NewYear_24","Market":"DE","Channel":"Display","Control_Responses":1256,"Control_Consideration":188,"Exposed_Responses":1984,"Exposed_Consideration":313,"Control_Rate":0.1497,"Exposed_Rate":0.1578,"Relative_Lift":5.3985,"Z_Score":-0.6198,"P_Value":0.5354,"Stat_Sig":"No","Absolute_Lift":0.0081},{"Campaign_Name":"NewYear_24","Market":"SA","Channel":"YouTube","Control_Responses":2097,"Control_Consideration":314,"Exposed_Responses":2323,"Exposed_Consideration":618,"Control_Rate":0.1497,"Exposed_Rate":0.266,"Relative_Lift":77.6675,"Z_Score":-9.4648,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1163},{"Campaign_Name":"NewYear_24","Market":"SA","Channel":"Social","Control_Responses":2646,"Control_Consideration":396,"Exposed_Responses":1300,"Exposed_Consideration":347,"Control_Rate":0.1497,"Exposed_Rate":0.2669,"Relative_Lift":78.3531,"Z_Score":-8.8559,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1173},{"Campaign_Name":"NewYear_24","Market":"SA","Channel":"Display","Control_Responses":2175,"Control_Consideration":326,"Exposed_Responses":2253,"Exposed_Consideration":362,"Control_Rate":0.1499,"Exposed_Rate":0.1607,"Relative_Lift":7.1986,"Z_Score":-0.9908,"P_Value":0.3218,"Stat_Sig":"No","Absolute_Lift":0.0108},{"Campaign_Name":"NewYear_24","Market":"EG","Channel":"YouTube","Control_Responses":1679,"Control_Consideration":251,"Exposed_Responses":1147,"Exposed_Consideration":299,"Control_Rate":0.1495,"Exposed_Rate":0.2607,"Relative_Lift":74.3752,"Z_Score":-7.3312,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1112},{"Campaign_Name":"NewYear_24","Market":"EG","Channel":"Social","Control_Responses":2184,"Control_Consideration":327,"Exposed_Responses":1049,"Exposed_Consideration":281,"Control_Rate":0.1497,"Exposed_Rate":0.2679,"Relative_Lift":78.9105,"Z_Score":-8.0488,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1181},{"Campaign_Name":"NewYear_24","Market":"EG","Channel":"Display","Control_Responses":2742,"Control_Consideration":411,"Exposed_Responses":2968,"Exposed_Consideration":469,"Control_Rate":0.1499,"Exposed_Rate":0.158,"Relative_Lift":5.4228,"Z_Score":-0.8499,"P_Value":0.3954,"Stat_Sig":"No","Absolute_Lift":0.0081},{"Campaign_Name":"BackToSchool_24","Market":"UK","Channel":"YouTube","Control_Responses":1539,"Control_Consideration":230,"Exposed_Responses":1046,"Exposed_Consideration":251,"Control_Rate":0.1494,"Exposed_Rate":0.24,"Relative_Lift":60.5657,"Z_Score":-5.8041,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0905},{"Campaign_Name":"BackToSchool_24","Market":"UK","Channel":"Social","Control_Responses":1907,"Control_Consideration":286,"Exposed_Responses":1957,"Exposed_Consideration":455,"Control_Rate":0.15,"Exposed_Rate":0.2325,"Relative_Lift":55.0262,"Z_Score":-6.5145,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0825},{"Campaign_Name":"BackToSchool_24","Market":"UK","Channel":"Display","Control_Responses":2256,"Control_Consideration":338,"Exposed_Responses":1893,"Exposed_Consideration":304,"Control_Rate":0.1498,"Exposed_Rate":0.1606,"Relative_Lift":7.1878,"Z_Score":-0.9553,"P_Value":0.3394,"Stat_Sig":"No","Absolute_Lift":0.0108},{"Campaign_Name":"BackToSchool_24","Market":"DE","Channel":"YouTube","Control_Responses":2756,"Control_Consideration":413,"Exposed_Responses":1256,"Exposed_Consideration":286,"Control_Rate":0.1499,"Exposed_Rate":0.2277,"Relative_Lift":51.9517,"Z_Score":-6.0289,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.0779},{"Campaign_Name":"BackToSchool_24","Market":"DE","Channel":"Social","Control_Responses":1144,"Control_Consideration":171,"Exposed_Responses":1721,"Exposed_Consideration":442,"Control_Rate":0.1495,"Exposed_Rate":0.2568,"Relative_Lift":71.819,"Z_Score":-6.8622,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1074},{"Campaign_Name":"BackToSchool_24","Market":"DE","Channel":"Display","Control_Responses":2191,"Control_Consideration":328,"Exposed_Responses":2544,"Exposed_Consideration":412,"Control_Rate":0.1497,"Exposed_Rate":0.1619,"Relative_Lift":8.1804,"Z_Score":-1.1571,"P_Value":0.2472,"Stat_Sig":"No","Absolute_Lift":0.0122},{"Campaign_Name":"BackToSchool_24","Market":"SA","Channel":"YouTube","Control_Responses":1344,"Control_Consideration":201,"Exposed_Responses":1110,"Exposed_Consideration":284,"Control_Rate":0.1496,"Exposed_Rate":0.2559,"Relative_Lift":71.0797,"Z_Score":-6.5818,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1063},{"Campaign_Name":"BackToSchool_24","Market":"SA","Channel":"Social","Control_Responses":2122,"Control_Consideration":318,"Exposed_Responses":1427,"Exposed_Consideration":397,"Control_Rate":0.1499,"Exposed_Rate":0.2782,"Relative_Lift":85.6457,"Z_Score":-9.347,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1283},{"Campaign_Name":"BackToSchool_24","Market":"SA","Channel":"Display","Control_Responses":2713,"Control_Consideration":406,"Exposed_Responses":1469,"Exposed_Consideration":236,"Control_Rate":0.1496,"Exposed_Rate":0.1607,"Relative_Lift":7.3529,"Z_Score":-0.9423,"P_Value":0.346,"Stat_Sig":"No","Absolute_Lift":0.011},{"Campaign_Name":"BackToSchool_24","Market":"EG","Channel":"YouTube","Control_Responses":1125,"Control_Consideration":168,"Exposed_Responses":2661,"Exposed_Consideration":694,"Control_Rate":0.1493,"Exposed_Rate":0.2608,"Relative_Lift":74.6457,"Z_Score":-7.4749,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1115},{"Campaign_Name":"BackToSchool_24","Market":"EG","Channel":"Social","Control_Responses":1403,"Control_Consideration":210,"Exposed_Responses":2037,"Exposed_Consideration":553,"Control_Rate":0.1497,"Exposed_Rate":0.2715,"Relative_Lift":81.3729,"Z_Score":-8.45,"P_Value":0.0,"Stat_Sig":"Yes","Absolute_Lift":0.1218},{"Campaign_Name":"BackToSchool_24","Market":"EG","Channel":"Display","Control_Responses":2117,"Control_Consideration":317,"Exposed_Responses":1413,"Exposed_Consideration":228,"Control_Rate":0.1497,"Exposed_Rate":0.1614,"Relative_Lift":7.7592,"Z_Score":-0.9361,"P_Value":0.3492,"Stat_Sig":"No","Absolute_Lift":0.0116}],"cplu":[{"Campaign_Name":"BackToSchool_23","Market":"DE","Channel":"Social","Spend_USD":133062,"Reach":3630519,"Impressions":8806340,"Conversions":4440,"Absolute_Lift":0.107,"Relative_Lift":71.565,"P_Value":0.0,"Lifted_Users":389434.447,"CPLU":0.342},{"Campaign_Name":"BackToSchool_23","Market":"DE","Channel":"YouTube","Spend_USD":152165,"Reach":3982513,"Impressions":9438776,"Conversions":5008,"Absolute_Lift":0.08,"Relative_Lift":53.463,"P_Value":0.0,"Lifted_Users":319372.897,"CPLU":0.476},{"Campaign_Name":"BackToSchool_23","Market":"EG","Channel":"Social","Spend_USD":104115,"Reach":2841748,"Impressions":7224193,"Conversions":12674,"Absolute_Lift":0.1,"Relative_Lift":66.593,"P_Value":0.0,"Lifted_Users":283698.723,"CPLU":0.367},{"Campaign_Name":"BackToSchool_23","Market":"EG","Channel":"YouTube","Spend_USD":97812,"Reach":2923729,"Impressions":6788645,"Conversions":12421,"Absolute_Lift":0.105,"Relative_Lift":70.343,"P_Value":0.0,"Lifted_Users":308063.551,"CPLU":0.318},{"Campaign_Name":"BackToSchool_23","Market":"SA","Channel":"Social","Spend_USD":85720,"Reach":2395266,"Impressions":5636558,"Conversions":10556,"Absolute_Lift":0.114,"Relative_Lift":75.735,"P_Value":0.0,"Lifted_Users":272106.663,"CPLU":0.315},{"Campaign_Name":"BackToSchool_23","Market":"SA","Channel":"YouTube","Spend_USD":91131,"Reach":2555704,"Impressions":6430694,"Conversions":11725,"Absolute_Lift":0.106,"Relative_Lift":70.849,"P_Value":0.0,"Lifted_Users":270986.163,"CPLU":0.336},{"Campaign_Name":"BackToSchool_23","Market":"UK","Channel":"Social","Spend_USD":140160,"Reach":3762985,"Impressions":9138451,"Conversions":4716,"Absolute_Lift":0.107,"Relative_Lift":71.599,"P_Value":0.0,"Lifted_Users":403419.616,"CPLU":0.347},{"Campaign_Name":"BackToSchool_23","Market":"UK","Channel":"YouTube","Spend_USD":141668,"Reach":3478520,"Impressions":8478953,"Conversions":4861,"Absolute_Lift":0.092,"Relative_Lift":61.45,"P_Value":0.0,"Lifted_Users":320485.969,"CPLU":0.442},{"Campaign_Name":"BackToSchool_24","Market":"DE","Channel":"Social","Spend_USD":143508,"Reach":4058485,"Impressions":10104893,"Conversions":4783,"Absolute_Lift":0.107,"Relative_Lift":71.819,"P_Value":0.0,"Lifted_Users":435686.082,"CPLU":0.329},{"Campaign_Name":"BackToSchool_24","Market":"DE","Channel":"YouTube","Spend_USD":152360,"Reach":4439282,"Impressions":10891539,"Conversions":5055,"Absolute_Lift":0.078,"Relative_Lift":51.952,"P_Value":0.0,"Lifted_Users":345607.623,"CPLU":0.441},{"Campaign_Name":"BackToSchool_24","Market":"EG","Channel":"Social","Spend_USD":100339,"Reach":2918418,"Impressions":7065884,"Conversions":12620,"Absolute_Lift":0.122,"Relative_Lift":81.373,"P_Value":0.0,"Lifted_Users":355458.656,"CPLU":0.282},{"Campaign_Name":"BackToSchool_24","Market":"EG","Channel":"YouTube","Spend_USD":87219,"Reach":2736887,"Impressions":6524378,"Conversions":10955,"Absolute_Lift":0.111,"Relative_Lift":74.646,"P_Value":0.0,"Lifted_Users":305083.19,"CPLU":0.286},{"Campaign_Name":"BackToSchool_24","Market":"SA","Channel":"Social","Spend_USD":91051,"Reach":2508558,"Impressions":6260372,"Conversions":11685,"Absolute_Lift":0.128,"Relative_Lift":85.646,"P_Value":0.0,"Lifted_Users":321966.904,"CPLU":0.283},{"Campaign_Name":"BackToSchool_24","Market":"SA","Channel":"YouTube","Spend_USD":107702,"Reach":2751177,"Impressions":7310689,"Conversions":13640,"Absolute_Lift":0.106,"Relative_Lift":71.08,"P_Value":0.0,"Lifted_Users":292456.4,"CPLU":0.368},{"Campaign_Name":"BackToSchool_24","Market":"UK","Channel":"Social","Spend_USD":158727,"Reach":4745860,"Impressions":11770938,"Conversions":5339,"Absolute_Lift":0.083,"Relative_Lift":55.026,"P_Value":0.0,"Lifted_Users":391651.82,"CPLU":0.405},{"Campaign_Name":"BackToSchool_24","Market":"UK","Channel":"YouTube","Spend_USD":136504,"Reach":3772521,"Impressions":9074632,"Conversions":4770,"Absolute_Lift":0.091,"Relative_Lift":60.566,"P_Value":0.0,"Lifted_Users":341466.214,"CPLU":0.4},{"Campaign_Name":"ExamPrep_23","Market":"DE","Channel":"Social","Spend_USD":118174,"Reach":3383227,"Impressions":8059307,"Conversions":3857,"Absolute_Lift":0.077,"Relative_Lift":51.538,"P_Value":0.0,"Lifted_Users":261546.543,"CPLU":0.452},{"Campaign_Name":"ExamPrep_23","Market":"DE","Channel":"YouTube","Spend_USD":117610,"Reach":3288528,"Impressions":8424509,"Conversions":4085,"Absolute_Lift":0.076,"Relative_Lift":50.467,"P_Value":0.0,"Lifted_Users":248884.742,"CPLU":0.473},{"Campaign_Name":"ExamPrep_23","Market":"EG","Channel":"Social","Spend_USD":76405,"Reach":1969194,"Impressions":5260721,"Conversions":9530,"Absolute_Lift":0.108,"Relative_Lift":72.353,"P_Value":0.0,"Lifted_Users":213307.435,"CPLU":0.358},{"Campaign_Name":"ExamPrep_23","Market":"EG","Channel":"YouTube","Spend_USD":63598,"Reach":1848325,"Impressions":4695438,"Conversions":7845,"Absolute_Lift":0.123,"Relative_Lift":82.111,"P_Value":0.0,"Lifted_Users":227122.577,"CPLU":0.28},{"Campaign_Name":"ExamPrep_23","Market":"SA","Channel":"Social","Spend_USD":74776,"Reach":2012190,"Impressions":5032968,"Conversions":9438,"Absolute_Lift":0.115,"Relative_Lift":77.237,"P_Value":0.0,"Lifted_Users":231731.927,"CPLU":0.323},{"Campaign_Name":"ExamPrep_23","Market":"SA","Channel":"YouTube","Spend_USD":70120,"Reach":2001279,"Impressions":4951589,"Conversions":9055,"Absolute_Lift":0.111,"Relative_Lift":74.482,"P_Value":0.0,"Lifted_Users":223001.227,"CPLU":0.314},{"Campaign_Name":"ExamPrep_23","Market":"UK","Channel":"Social","Spend_USD":120856,"Reach":3056618,"Impressions":7649692,"Conversions":4015,"Absolute_Lift":0.09,"Relative_Lift":60.357,"P_Value":0.0,"Lifted_Users":276088.117,"CPLU":0.438},{"Campaign_Name":"ExamPrep_23","Market":"UK","Channel":"YouTube","Spend_USD":110553,"Reach":3243239,"Impressions":7450887,"Conversions":3778,"Absolute_Lift":0.107,"Relative_Lift":71.654,"P_Value":0.0,"Lifted_Users":348305.822,"CPLU":0.317},{"Campaign_Name":"NewYear_24","Market":"DE","Channel":"Social","Spend_USD":58748,"Reach":1570188,"Impressions":4286609,"Conversions":1884,"Absolute_Lift":0.106,"Relative_Lift":70.524,"P_Value":0.0,"Lifted_Users":165738.352,"CPLU":0.354},{"Campaign_Name":"NewYear_24","Market":"DE","Channel":"YouTube","Spend_USD":53527,"Reach":1460934,"Impressions":3886344,"Conversions":1699,"Absolute_Lift":0.093,"Relative_Lift":62.319,"P_Value":0.0,"Lifted_Users":136397.064,"CPLU":0.392},{"Campaign_Name":"NewYear_24","Market":"EG","Channel":"Social","Spend_USD":51322,"Reach":1344416,"Impressions":3113833,"Conversions":6484,"Absolute_Lift":0.118,"Relative_Lift":78.91,"P_Value":0.0,"Lifted_Users":158841.26,"CPLU":0.323},{"Campaign_Name":"NewYear_24","Market":"EG","Channel":"YouTube","Spend_USD":51946,"Reach":1493368,"Impressions":3484097,"Conversions":6605,"Absolute_Lift":0.111,"Relative_Lift":74.375,"P_Value":0.0,"Lifted_Users":166042.045,"CPLU":0.313},{"Campaign_Name":"NewYear_24","Market":"SA","Channel":"Social","Spend_USD":43389,"Reach":1275373,"Impressions":3265582,"Conversions":5397,"Absolute_Lift":0.117,"Relative_Lift":78.353,"P_Value":0.0,"Lifted_Users":149554.336,"CPLU":0.29},{"Campaign_Name":"NewYear_24","Market":"SA","Channel":"YouTube","Spend_USD":43730,"Reach":1431069,"Impressions":3083987,"Conversions":5542,"Absolute_Lift":0.116,"Relative_Lift":77.668,"P_Value":0.0,"Lifted_Users":166429.86,"CPLU":0.263},{"Campaign_Name":"NewYear_24","Market":"UK","Channel":"Social","Spend_USD":77157,"Reach":2146174,"Impressions":5168411,"Conversions":2548,"Absolute_Lift":0.083,"Relative_Lift":55.198,"P_Value":0.0,"Lifted_Users":177530.917,"CPLU":0.435},{"Campaign_Name":"NewYear_24","Market":"UK","Channel":"YouTube","Spend_USD":76330,"Reach":1867922,"Impressions":4960535,"Conversions":2495,"Absolute_Lift":0.088,"Relative_Lift":59.084,"P_Value":0.0,"Lifted_Users":165164.48,"CPLU":0.462}],"cplu_market_channel":[{"Market":"EG","Channel":"YouTube","Avg_CPLU":0.299,"Avg_Rel_Lift":75.369,"N":4},{"Market":"SA","Channel":"Social","Avg_CPLU":0.303,"Avg_Rel_Lift":79.243,"N":4},{"Market":"SA","Channel":"YouTube","Avg_CPLU":0.32,"Avg_Rel_Lift":73.519,"N":4},{"Market":"EG","Channel":"Social","Avg_CPLU":0.333,"Avg_Rel_Lift":74.807,"N":4},{"Market":"DE","Channel":"Social","Avg_CPLU":0.369,"Avg_Rel_Lift":66.362,"N":4},{"Market":"UK","Channel":"YouTube","Avg_CPLU":0.405,"Avg_Rel_Lift":63.188,"N":4},{"Market":"UK","Channel":"Social","Avg_CPLU":0.406,"Avg_Rel_Lift":60.545,"N":4},{"Market":"DE","Channel":"YouTube","Avg_CPLU":0.446,"Avg_Rel_Lift":54.55,"N":4}],"creative_overall":[{"Creative_Name":"Life Hack","Awareness":4.64,"Consideration":10.11,"Purchase_Intent":2.18},{"Creative_Name":"Coding Help","Awareness":3.17,"Consideration":3.03,"Purchase_Intent":2.24},{"Creative_Name":"Study With Me","Awareness":3.06,"Consideration":2.73,"Purchase_Intent":2.29},{"Creative_Name":"Grade Booster","Awareness":3.12,"Consideration":1.82,"Purchase_Intent":2.23},{"Creative_Name":"Free Trial","Awareness":3.17,"Consideration":0.6,"Purchase_Intent":3.32}],"creative_by_market":[{"Market":"DE","Creative_Name":"Coding Help","Point_Est_Consideration":3.05},{"Market":"DE","Creative_Name":"Free Trial","Point_Est_Consideration":0.6},{"Market":"DE","Creative_Name":"Grade Booster","Point_Est_Consideration":1.8},{"Market":"DE","Creative_Name":"Life Hack","Point_Est_Consideration":9.23},{"Market":"DE","Creative_Name":"Study With Me","Point_Est_Consideration":2.42},{"Market":"EG","Creative_Name":"Coding Help","Point_Est_Consideration":3.06},{"Market":"EG","Creative_Name":"Free Trial","Point_Est_Consideration":0.6},{"Market":"EG","Creative_Name":"Grade Booster","Point_Est_Consideration":1.83},{"Market":"EG","Creative_Name":"Life Hack","Point_Est_Consideration":10.89},{"Market":"EG","Creative_Name":"Study With Me","Point_Est_Consideration":3.12},{"Market":"SA","Creative_Name":"Coding Help","Point_Est_Consideration":2.99},{"Market":"SA","Creative_Name":"Free Trial","Point_Est_Consideration":0.58},{"Market":"SA","Creative_Name":"Grade Booster","Point_Est_Consideration":1.84},{"Market":"SA","Creative_Name":"Life Hack","Point_Est_Consideration":11.28},{"Market":"SA","Creative_Name":"Study With Me","Point_Est_Consideration":2.83},{"Market":"UK","Creative_Name":"Coding Help","Point_Est_Consideration":3.01},{"Market":"UK","Creative_Name":"Free Trial","Point_Est_Consideration":0.59},{"Market":"UK","Creative_Name":"Grade Booster","Point_Est_Consideration":1.8},{"Market":"UK","Creative_Name":"Life Hack","Point_Est_Consideration":9.02},{"Market":"UK","Creative_Name":"Study With Me","Point_Est_Consideration":2.56}],"creative_by_channel":[{"Channel":"Display","Creative_Name":"Coding Help","Point_Est_Consideration":3.11},{"Channel":"Display","Creative_Name":"Free Trial","Point_Est_Consideration":0.6},{"Channel":"Display","Creative_Name":"Grade Booster","Point_Est_Consideration":1.8},{"Channel":"Display","Creative_Name":"Life Hack","Point_Est_Consideration":10.17},{"Channel":"Display","Creative_Name":"Study With Me","Point_Est_Consideration":2.66},{"Channel":"Search","Creative_Name":"Coding Help","Point_Est_Consideration":2.88},{"Channel":"Search","Creative_Name":"Free Trial","Point_Est_Consideration":0.62},{"Channel":"Search","Creative_Name":"Grade Booster","Point_Est_Consideration":1.81},{"Channel":"Search","Creative_Name":"Life Hack","Point_Est_Consideration":10.64},{"Channel":"Search","Creative_Name":"Study With Me","Point_Est_Consideration":2.78},{"Channel":"Social","Creative_Name":"Coding Help","Point_Est_Consideration":3.09},{"Channel":"Social","Creative_Name":"Free Trial","Point_Est_Consideration":0.59},{"Channel":"Social","Creative_Name":"Grade Booster","Point_Est_Consideration":1.84},{"Channel":"Social","Creative_Name":"Life Hack","Point_Est_Consideration":9.85},{"Channel":"Social","Creative_Name":"Study With Me","Point_Est_Consideration":2.7},{"Channel":"YouTube","Creative_Name":"Coding Help","Point_Est_Consideration":3.03},{"Channel":"YouTube","Creative_Name":"Free Trial","Point_Est_Consideration":0.57},{"Channel":"YouTube","Creative_Name":"Grade Booster","Point_Est_Consideration":1.81},{"Channel":"YouTube","Creative_Name":"Life Hack","Point_Est_Consideration":9.78},{"Channel":"YouTube","Creative_Name":"Study With Me","Point_Est_Consideration":2.79}],"campaign_perf":[{"Campaign_Name":"Always_On","Weeks":78,"Spend":4952865,"Reach":134617168,"Conversions":447039,"CPA":11.08},{"Campaign_Name":"BackToSchool_23","Weeks":8,"Spend":1725976,"Reach":46787596,"Conversions":156955,"CPA":11.0},{"Campaign_Name":"BackToSchool_24","Weeks":8,"Spend":1741582,"Reach":48244221,"Conversions":150526,"CPA":11.57},{"Campaign_Name":"ExamPrep_23","Weeks":6,"Spend":1357117,"Reach":36644394,"Conversions":120664,"CPA":11.25},{"Campaign_Name":"NewYear_24","Weeks":4,"Spend":839805,"Reach":22922145,"Conversions":75247,"CPA":11.16}]};
+
+/* ============================================================
+   2.  STATE & HELPERS
+============================================================ */
+const fmt$ = n => '$' + n.toLocaleString('en-US', {maximumFractionDigits: 0});
+const fmt$2 = n => '$' + n.toFixed(2);
+const fmtPct = n => (n * 100).toFixed(2) + '%';
+const fmtN = n => n.toLocaleString('en-US');
+
+/* ============================================================
+   3.  TAB SWITCHER
+============================================================ */
+document.querySelectorAll('#nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + tab));
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+});
+
+/* ============================================================
+   4.  MARKETS VIEW
+============================================================ */
+function renderMarkets() {
+  const verdicts = {
+    'UK': { v: 'win', label: 'BRAND PRIORITY', rec: true,  why: 'Home market for Gemini Pro free upgrade, sign-ups close 15 Sep' },
+    'EG': { v: 'win', label: 'PERFORMANCE',     rec: true,  why: 'Lowest blended CPA + 2nd lowest CPLU' },
+    'SA': { v: 'win', label: 'PERFORMANCE',     rec: true,  why: 'Lowest CPLU overall, Social engagement leads MENA' },
+    'DE': { v: 'skip',label: 'PARK',            rec: false, why: 'Worst CPA, worst CPLU. No clear advantage anywhere' }
+  };
+  const grid = document.getElementById('market-grid');
+  grid.innerHTML = '';
+  // Sort: recommended first
+  const sorted = [...DATA.market].sort((a,b) => (verdicts[b.Market].rec ? 1:0) - (verdicts[a.Market].rec ? 1:0));
+  sorted.forEach(m => {
+    const v = verdicts[m.Market];
+    const cplu = (DATA.cplu_market_channel
+                  .filter(r => r.Market === m.Market)
+                  .reduce((s,r) => s + r.Avg_CPLU, 0)
+                  / Math.max(1, DATA.cplu_market_channel.filter(r => r.Market === m.Market).length));
+    const card = document.createElement('div');
+    card.className = 'mcard' + (v.rec ? ' recommended' : '');
+    card.innerHTML = `
+      ${v.rec ? '<span class="badge">PICK</span>' : ''}
+      <div class="flag">${m.Market}</div>
+      <div class="country">${ {UK:'United Kingdom', DE:'Germany', EG:'Egypt', SA:'Saudi Arabia'}[m.Market] }</div>
+      <span class="verdict ${v.v}">${v.label}</span>
+      <div style="font-size:12px;color:var(--slate);margin-top:10px;">${v.why}</div>
+      <div class="grid">
+        <div><div class="k">CPA</div><div class="v">$${m.CPA.toFixed(2)}</div></div>
+        <div><div class="k">CPLU avg</div><div class="v">$${cplu.toFixed(2)}</div></div>
+        <div><div class="k">CVR</div><div class="v">${m.CVR.toFixed(2)}%</div></div>
+        <div><div class="k">Reach</div><div class="v">${(m.Reach/1e6).toFixed(0)}M</div></div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ============================================================
+   5.  CHANNELS VIEW
+============================================================ */
+function renderChannels() {
+  const meta = {
+    'Search':  { role: 'CONVERTER',  pill: 'perf',  verdict: 'KEEP',  v: 'win' },
+    'YouTube': { role: 'BRAND',      pill: 'brand', verdict: 'KEEP',  v: 'win' },
+    'Social':  { role: 'BRAND',      pill: 'brand', verdict: 'KEEP',  v: 'win' },
+    'Display': { role: 'AWARENESS',  pill: 'skip',  verdict: 'DROP',  v: 'skip' }
+  };
+  const tbody = document.getElementById('channel-tbody');
+  tbody.innerHTML = '';
+  // Pull CPLU per channel
+  const cpluByChannel = {};
+  ['Social','YouTube','Search','Display'].forEach(c => {
+    const studies = DATA.cplu.filter(r => r.Channel === c);
+    cpluByChannel[c] = {
+      avg: studies.length ? studies.reduce((s,r)=>s+r.CPLU,0)/studies.length : null,
+      n:   studies.length
+    };
+  });
+  // Sort: keepers first
+  const sorted = [...DATA.channel].sort((a,b) => (meta[b.Channel].verdict === 'KEEP'?1:0) - (meta[a.Channel].verdict === 'KEEP'?1:0));
+  const maxCPA = Math.max(...DATA.channel.map(c=>c.CPA));
+  sorted.forEach(c => {
+    const m = meta[c.Channel];
+    const cp = cpluByChannel[c.Channel];
+    const tr = document.createElement('tr');
+    if (m.verdict === 'KEEP') tr.className = 'recommended';
+    tr.innerHTML = `
+      <td class="label">${c.Channel}</td>
+      <td><span class="pill-tag ${m.pill}">${m.role}</span></td>
+      <td>$${c.CPA.toFixed(2)}</td>
+      <td>$${c.CPM.toFixed(2)}</td>
+      <td>${c.CVR.toFixed(2)}%</td>
+      <td>${cp.avg !== null ? '$'+cp.avg.toFixed(2) : '-'}</td>
+      <td>${cp.n} / ${ {Search:0, Display:16, Social:16, YouTube:16}[c.Channel] || 0}</td>
+      <td><span class="pill-tag ${m.pill}">${m.verdict}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   6.  BRAND LIFT, calculator + presets + CPLU table
+============================================================ */
+function normsdist(z) {
+  // High-precision approximation to standard normal CDF
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989422804014327 * Math.exp(-z*z/2);
+  let p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  if (z > 0) p = 1 - p;
+  return p;
+}
+
+function calcSig() {
+  const cn = +document.getElementById('cn').value;
+  const cs = +document.getElementById('cs').value;
+  const en = +document.getElementById('en').value;
+  const es = +document.getElementById('es').value;
+  if (!cn || !en || cs > cn || es > en) return;
+  const cr = cs / cn;
+  const er = es / en;
+  const al = er - cr;
+  const rl = cr === 0 ? 0 : (al / cr) * 100;
+  const p = (cs + es) / (cn + en);
+  const se = Math.sqrt(p * (1 - p) * (1/cn + 1/en));
+  const z  = se === 0 ? 0 : al / se;
+  const pv = 2 * (1 - normsdist(Math.abs(z)));
+  const sig = pv < 0.05;
+
+  document.getElementById('cr').textContent = (cr * 100).toFixed(2) + '%';
+  document.getElementById('er').textContent = (er * 100).toFixed(2) + '%';
+  document.getElementById('al').textContent = (al * 100).toFixed(2) + 'pp';
+  document.getElementById('rl').textContent = rl.toFixed(1) + '%';
+  document.getElementById('zs').textContent = z.toFixed(3);
+  document.getElementById('pv').textContent = pv < 0.0001 ? '< 0.0001' : pv.toFixed(4);
+
+  const box = document.getElementById('sig-result');
+  const verd = document.getElementById('sig-verdict');
+  const exp = document.getElementById('sig-explain');
+  box.classList.remove('sig','notsig','neutral');
+  verd.classList.remove('sig','notsig');
+  if (sig) {
+    box.classList.add('sig'); verd.classList.add('sig');
+    verd.textContent = 'Significant';
+    exp.textContent = `Real lift. We can confidently say the ad changed Gemini Pro consideration (p < 0.05).`;
+  } else {
+    box.classList.add('notsig'); verd.classList.add('notsig');
+    verd.textContent = 'Not significant';
+    exp.textContent = `Could be random chance. Don't optimise on this number, increase the sample or change the creative.`;
+  }
+}
+
+function renderPresets() {
+  const row = document.getElementById('preset-row');
+  // Pick interesting examples
+  const picks = [
+    { label: 'Best result · BTS24 SA Social', f: r => r.Campaign_Name === 'BackToSchool_24' && r.Market==='SA' && r.Channel==='Social' },
+    { label: 'Display flop · BTS23 UK Display', f: r => r.Campaign_Name === 'BackToSchool_23' && r.Market==='UK' && r.Channel==='Display' },
+    { label: 'YouTube win · ExamPrep23 EG YouTube', f: r => r.Campaign_Name==='ExamPrep_23' && r.Market==='EG' && r.Channel==='YouTube' },
+    { label: 'UK YouTube · BTS24', f: r => r.Campaign_Name==='BackToSchool_24' && r.Market==='UK' && r.Channel==='YouTube' },
+    { label: 'Custom (clear)', f: null }
+  ];
+  picks.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'preset';
+    btn.textContent = p.label;
+    btn.addEventListener('click', () => {
+      if (!p.f) {
+        document.getElementById('cn').value = 2500;
+        document.getElementById('cs').value = 375;
+        document.getElementById('en').value = 2500;
+        document.getElementById('es').value = 600;
+      } else {
+        const r = DATA.brand_lift.find(p.f);
+        if (r) {
+          document.getElementById('cn').value = Math.round(r.Control_Responses);
+          document.getElementById('cs').value = Math.round(r.Control_Consideration);
+          document.getElementById('en').value = Math.round(r.Exposed_Responses);
+          document.getElementById('es').value = Math.round(r.Exposed_Consideration);
+        }
+      }
+      calcSig();
+    });
+    row.appendChild(btn);
+  });
+}
+
+function renderCPLUTable() {
+  const tbody = document.getElementById('cplu-tbody');
+  tbody.innerHTML = '';
+  const top = [...DATA.cplu].sort((a,b) => a.CPLU - b.CPLU).slice(0, 8);
+  top.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span style="font-family:Fraunces,serif;font-weight:600">${r.Campaign_Name}</span><br>
+        <span style="color:var(--slate);font-size:11px">${r.Market} · ${r.Channel}</span></td>
+      <td>${(r.Absolute_Lift*100).toFixed(1)}pp <span style="color:var(--slate);font-size:11px">/ ${r.Relative_Lift.toFixed(0)}%</span></td>
+      <td>$${r.CPLU.toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   7.  CREATIVE VIEW
+============================================================ */
+function renderCreatives() {
+  const desc = {
+    'Life Hack':   'Quick visual hacks that solve a student problem in 15 seconds with Gemini.',
+    'Coding Help': 'Step-by-step debug walkthroughs and code generation for CS students.',
+    'Study With Me': 'Lo-fi co-study format showing Gemini as the silent study partner.',
+    'Grade Booster': 'Before/after of an assignment, the rewrite story.',
+    'Free Trial':   'Direct response: "free until finals 2026" creative.'
+  };
+  const grid = document.getElementById('creative-grid');
+  grid.innerHTML = '';
+  const sorted = [...DATA.creative_overall].sort((a,b) => b.Consideration - a.Consideration);
+  sorted.forEach((c, idx) => {
+    const card = document.createElement('div');
+    card.className = 'ccard' + (idx === 0 ? ' winner' : '');
+    card.innerHTML = `
+      ${idx === 0 ? '<div class="crown">★ WINNER</div>' : ''}
+      <div class="name">${c.Creative_Name}</div>
+      <div class="desc">${desc[c.Creative_Name] || ''}</div>
+      <div class="metric-row"><span class="k">Consideration</span><span class="v" style="color:${idx===0?'var(--blue)':'var(--ink)'}">+${c.Consideration.toFixed(2)}pp</span></div>
+      <div class="metric-row"><span class="k">Awareness</span><span class="v">+${c.Awareness.toFixed(2)}pp</span></div>
+      <div class="metric-row"><span class="k">Purchase Intent</span><span class="v">+${c.Purchase_Intent.toFixed(2)}pp</span></div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // By market table
+  const tbody = document.getElementById('creative-by-market-tbody');
+  tbody.innerHTML = '';
+  ['UK','EG','SA','DE'].forEach(m => {
+    const sub = DATA.creative_by_market.filter(r => r.Market === m).sort((a,b) => b.Point_Est_Consideration - a.Point_Est_Consideration);
+    const notes = m === 'UK' ? 'Big halo on awareness too, cement Gemini = AI-for-study.' :
+                  m === 'EG' ? 'Highest lift of any market for Life Hack (10.89pp). Localise to Arabic.' :
+                  m === 'SA' ? 'Strongest market for Life Hack overall (11.28pp). Pair with Social Reels.' :
+                               'De-prioritised market, see Markets tab.';
+    const tr = document.createElement('tr');
+    if (['UK','EG','SA'].includes(m)) tr.className = 'recommended';
+    tr.innerHTML = `
+      <td class="label">${m}</td>
+      <td><b>${sub[0].Creative_Name}</b><br><span style="font-size:11px;color:var(--slate)">+${sub[0].Point_Est_Consideration.toFixed(2)}pp</span></td>
+      <td>${sub[1].Creative_Name}<br><span style="font-size:11px;color:var(--slate)">+${sub[1].Point_Est_Consideration.toFixed(2)}pp</span></td>
+      <td>${sub[2].Creative_Name}<br><span style="font-size:11px;color:var(--slate)">+${sub[2].Point_Est_Consideration.toFixed(2)}pp</span></td>
+      <td style="font-size:12px;color:var(--slate);max-width:280px;">${notes}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   8.  BUDGET ALLOCATOR
+============================================================ */
+const TOTAL = 10000000;
+// 9 lines: 3 markets × 3 channels (no Display)
+const ALLOC_LINES = [
+  // Default split rationale:
+  // - Total split 35/35/30 across UK/EG/SA  (UK protects brand role, EG/SA efficiency)
+  // - Within market: 40% YT / 30% Social / 30% Search
+  { id: 'UK-YouTube', market: 'UK', channel: 'YouTube', pct: 14, cplu: 0.405 },
+  { id: 'UK-Social',  market: 'UK', channel: 'Social',  pct: 10, cplu: 0.406 },
+  { id: 'UK-Search',  market: 'UK', channel: 'Search',  pct: 11, cplu: null  }, // no brand-lift, use CPA proxy
+  { id: 'EG-YouTube', market: 'EG', channel: 'YouTube', pct: 14, cplu: 0.299 },
+  { id: 'EG-Social',  market: 'EG', channel: 'Social',  pct: 11, cplu: 0.333 },
+  { id: 'EG-Search',  market: 'EG', channel: 'Search',  pct: 10, cplu: null  },
+  { id: 'SA-YouTube', market: 'SA', channel: 'YouTube', pct: 12, cplu: 0.320 },
+  { id: 'SA-Social',  market: 'SA', channel: 'Social',  pct:  9, cplu: 0.303 },
+  { id: 'SA-Search',  market: 'SA', channel: 'Search',  pct:  9, cplu: null  },
+];
+const CHANNEL_COLOR = { YouTube: '#EA4335', Social: '#1A73E8', Search: '#34A853' };
+
+function renderAlloc() {
+  const rows = document.getElementById('alloc-rows');
+  rows.innerHTML = '';
+  ALLOC_LINES.forEach(line => {
+    const usd = TOTAL * line.pct / 100;
+    const row = document.createElement('div');
+    row.className = 'alloc-row';
+    row.innerHTML = `
+      <div class="nm"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${CHANNEL_COLOR[line.channel]};margin-right:6px;vertical-align:middle"></span>${line.market} · ${line.channel}</div>
+      <input type="range" min="0" max="40" value="${line.pct}" data-id="${line.id}" />
+      <span class="usd" data-usd="${line.id}">${fmt$(usd)}</span>
+      <span class="pct" data-pct="${line.id}">${line.pct}%</span>
+      <span class="lifted" data-lift="${line.id}">-</span>
+    `;
+    rows.appendChild(row);
+  });
+
+  document.querySelectorAll('.alloc-row input[type=range]').forEach(input => {
+    input.addEventListener('input', () => {
+      const id = input.dataset.id;
+      ALLOC_LINES.find(l => l.id === id).pct = +input.value;
+      updateAlloc();
+    });
+  });
+
+  updateAlloc();
+}
+
+function updateAlloc() {
+  const totalPct = ALLOC_LINES.reduce((s,l) => s + l.pct, 0);
+  const bar = document.getElementById('alloc-bar');
+  bar.innerHTML = '';
+  let totalLifted = 0;
+  let totalLiftedBudget = 0;
+
+  ALLOC_LINES.forEach(line => {
+    const pctOf100 = totalPct > 0 ? (line.pct / totalPct * 100) : 0;
+    const usd = TOTAL * line.pct / 100;
+
+    // Forecast lifted users (only where we have a CPLU)
+    let lifted = null;
+    if (line.cplu) {
+      lifted = Math.round(usd / line.cplu);
+      totalLifted += lifted;
+      totalLiftedBudget += usd;
+    }
+
+    document.querySelector(`[data-usd="${line.id}"]`).textContent = fmt$(usd);
+    document.querySelector(`[data-pct="${line.id}"]`).textContent = line.pct + '%';
+    const liftEl = document.querySelector(`[data-lift="${line.id}"]`);
+    // Market-specific Search CPA
+    const searchCPA = { 'UK': 12.10, 'EG': 3.23, 'SA': 3.23, 'DE': 12.10 }[line.market] || 5.76;
+    liftEl.textContent = lifted ? '+' + (lifted/1000).toFixed(0) + 'K lifted' :
+                         (line.channel === 'Search' ? `~${Math.round(usd / searchCPA).toLocaleString()} sign-ups` : '-');
+
+    const seg = document.createElement('div');
+    seg.style.flex = pctOf100;
+    seg.style.background = CHANNEL_COLOR[line.channel];
+    seg.style.opacity = (line.market === 'UK' ? 1 : line.market === 'EG' ? 0.85 : 0.7);
+    seg.innerHTML = pctOf100 > 6 ? `<div>${line.market}</div><small>${line.channel}</small>` : '';
+    bar.appendChild(seg);
+  });
+
+  document.getElementById('alloc-total').textContent =
+      (TOTAL * totalPct / 100).toLocaleString();
+  document.getElementById('alloc-lifted').textContent = (totalLifted/1e6).toFixed(2) + 'M';
+  document.getElementById('alloc-avgcplu').textContent = totalLifted > 0 ?
+      '$' + (totalLiftedBudget / totalLifted).toFixed(2) : '-';
+}
+
+document.getElementById('reset-alloc').addEventListener('click', () => {
+  const defaults = [14,10,11,14,11,10,12,9,9];
+  ALLOC_LINES.forEach((l, i) => l.pct = defaults[i]);
+  document.querySelectorAll('.alloc-row input[type=range]').forEach((input, i) => input.value = defaults[i]);
+  updateAlloc();
+});
+document.getElementById('search-only').addEventListener('click', () => {
+  ALLOC_LINES.forEach(l => l.pct = l.channel === 'Search' ? 33 : 0);
+  document.querySelectorAll('.alloc-row input[type=range]').forEach((input, i) => input.value = ALLOC_LINES[i].pct);
+  updateAlloc();
+});
+document.getElementById('brand-heavy').addEventListener('click', () => {
+  const m = [20,20,5,20,15,5,10,10,5];
+  // total 110%, but proportional bar will normalise
+  ALLOC_LINES.forEach((l,i) => l.pct = m[i]);
+  document.querySelectorAll('.alloc-row input[type=range]').forEach((input, i) => input.value = m[i]);
+  updateAlloc();
+});
+
+/* ============================================================
+   9.  INIT
+============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderMarkets();
+  renderChannels();
+  renderPresets();
+  renderCPLUTable();
+  renderCreatives();
+  renderAlloc();
+
+  ['cn','cs','en','es'].forEach(id => document.getElementById(id).addEventListener('input', calcSig));
+  calcSig();
+});
+</script>
+</body>
+</html>
